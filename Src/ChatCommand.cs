@@ -100,12 +100,12 @@ internal sealed class ChatCommand : AsyncCommand<ChatCommandSettings>
         AnsiConsole.MarkupLine($"Selected model: [DarkSeaGreen4 bold]{selectedModel}[/]");
 
         // Setup first persona
-        WriteSectionTitle("First AI Persona");
-        var ai1 = await AIPersonaSetup.GenerateAIPersona("AI 1", m_ollamaClient, cancellationToken);
+        WriteSectionTitle("First Agent");
+        var agent1 = await AIPersonaSetup.GenerateAIPersona("Agent 1", m_ollamaClient, cancellationToken);
 
         // Setup second persona
-        WriteSectionTitle("Second AI Persona");
-        var ai2 = await AIPersonaSetup.GenerateAIPersona("AI 2", m_ollamaClient, cancellationToken);
+        WriteSectionTitle("Second Agent");
+        var agent2 = await AIPersonaSetup.GenerateAIPersona("Agent 2", m_ollamaClient, cancellationToken);
 
         // Select starting text
         WriteSectionTitle("Starting Text");
@@ -124,8 +124,8 @@ internal sealed class ChatCommand : AsyncCommand<ChatCommandSettings>
 
         // Start conversation
         var conversation = new Conversation();
-        await conversation.Initialize(ai1, ai2, startingText);
-        WriteSectionTitle($"{ai1.Name}");
+        await conversation.Initialize(agent1, agent2, startingText);
+        WriteSectionTitle($"{agent1.Name}");
         AnsiConsole.WriteLine(startingText);
         
         Thread.Sleep(ConversationWaitTime);
