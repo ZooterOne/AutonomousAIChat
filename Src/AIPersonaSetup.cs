@@ -48,16 +48,16 @@ internal static class AIPersonaSetup
         var shortAnswers = await AnsiConsole.PromptAsync(booleanPrompt, cancellationToken);
         AnsiConsole.MarkupLine($"Short Answers: [DarkSeaGreen4 bold]{(shortAnswers ? "Yes" : "No")}[/].");
 
-        // Select feeling
-        var feelingPrompt = new SelectionPrompt<AIPersona.Sentiment>()
-            .Title("Select the feeling:")
-            .AddChoices((AIPersona.Sentiment[])Enum.GetValues(typeof(AIPersona.Sentiment)))
+        // Select tone
+        var tonePrompt = new SelectionPrompt<AIPersona.Tone>()
+            .Title("Select the tone:")
+            .AddChoices((AIPersona.Tone[])Enum.GetValues(typeof(AIPersona.Tone)))
             .UseConverter(item => item.ToString())
             .WrapAround()
             .PageSize(ChatCommand.PageSize)
             .MoreChoicesText(ChatCommand.PageFooterText);
-        var selectedFeeling = await AnsiConsole.PromptAsync(feelingPrompt, cancellationToken);
-        AnsiConsole.MarkupLine($"Feeling: [DarkSeaGreen4 bold]{selectedFeeling.ToString()}[/].");
+        var selectedTone = await AnsiConsole.PromptAsync(tonePrompt, cancellationToken);
+        AnsiConsole.MarkupLine($"Tone: [DarkSeaGreen4 bold]{selectedTone.ToString()}[/].");
 
         // Select interests
         var interestsPrompt = new MultiSelectionPrompt<AIPersona.Interest>()
@@ -72,14 +72,23 @@ internal static class AIPersonaSetup
         var selectedInterests = await AnsiConsole.PromptAsync(interestsPrompt, cancellationToken);
         AnsiConsole.MarkupLine($"Interests: [DarkSeaGreen4 bold]{string.Join(" + ",
             selectedInterests.Select(item => item.ToString()))}[/].");
+        
+        // Add additional context
+        var detailsPrompt =
+            new TextPrompt<string>(
+                    "Any additional details? for example [DarkSeaGreen4 italic]You want some recommendations on books to read[/]. [Grey italic]Leave empty to ignore[/]: ")
+                .AllowEmpty()
+                .ClearOnFinish();
+        var additionalDetails = await AnsiConsole.PromptAsync(detailsPrompt, cancellationToken);
 
         return new AIPersona(name, ollamaClient)
         {
             Gender = selectedGender,
             EndlessConversation = endlessConversation,
             ShortAnswers = shortAnswers,
-            Feeling = selectedFeeling,
-            Interests = selectedInterests.Aggregate((result, next) => result | next)
+            Spirit = selectedTone,
+            Interests = selectedInterests.Aggregate((result, next) => result | next),
+            AdditionalDetails = additionalDetails
         };
     }
 }

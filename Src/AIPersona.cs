@@ -21,19 +21,32 @@ internal sealed class AIPersona
     }
 
     /// <summary>
-    /// Defines the current emotional state of the persona.
+    /// Defines the current tone of the persona.
     /// </summary>
-    public enum Sentiment
+    public enum Tone
     {
         None,
-        Argue,
-        Upset,
-        Sad,
-        Happy,
-        Flirty,
+        Amused,
+        Appreciative,
+        Assertive,
+        Bold,
+        Calm,
+        Candid,
+        Cheerful,
+        Comforting,
+        Comic,
+        Compassionate,
+        Curious,
+        Direct,
+        Eloquent,
+        Enthusiastic,
+        Optimistic,
+        Reassuring,
+        Respectful,
         Romantic,
-        Arrogant,
-        Calm
+        Straightforward,
+        Thoughtful,
+        Tolerant
     }
 
     /// <summary>
@@ -49,7 +62,13 @@ internal sealed class AIPersona
         Sport = 8,
         Technology = 16,
         Travel = 32,
-        Science = 64
+        Science = 64,
+        Animals = 128,
+        Camping = 256,
+        Gardening = 512,
+        Writing = 1024,
+        Reading = 2048,
+        Cooking = 4096
     }
 
     /// <summary>
@@ -108,9 +127,9 @@ internal sealed class AIPersona
     } = true;
 
     /// <summary>
-    /// Gets or sets the current emotional sentiment of the persona.
+    /// Gets or sets the current emotional spirit of the persona.
     /// </summary>
-    public Sentiment Feeling
+    public Tone Spirit
     {
         get;
         set
@@ -118,7 +137,7 @@ internal sealed class AIPersona
             field = value;
             Chat = null;
         }
-    } = Sentiment.None;
+    } = Tone.None;
 
     /// <summary>
     /// Gets or sets the set of interests for the persona.
@@ -132,6 +151,19 @@ internal sealed class AIPersona
             Chat = null;
         }
     } = Interest.Undefined;
+
+    /// <summary>
+    /// Gets or sets additional details for the persona.
+    /// </summary>
+    public string AdditionalDetails
+    {
+        get;
+        set
+        {
+            field = value;
+            Chat = null;
+        }
+    } = string.Empty;
 
     /// <summary>
     /// Gets the active conversation session for this persona. 
@@ -157,40 +189,15 @@ internal sealed class AIPersona
         };
     }
 
-    private static void AppendFeelingToPrompt(Sentiment feeling, StringBuilder prompt)
+    private static void AppendSpiritToPrompt(Tone spirit, StringBuilder prompt)
     {
-        switch (feeling)
+        switch (spirit)
         {
-            case Sentiment.Argue:
-                prompt.Append(" You like to argue.");
+            case Tone.None:
                 break;
 
-            case Sentiment.Upset:
-                prompt.Append(" You are feeling upset.");
-                break;
-
-            case Sentiment.Sad:
-                prompt.Append(" You are feeling sad.");
-                break;
-
-            case Sentiment.Happy:
-                prompt.Append(" You are feeling happy.");
-                break;
-
-            case Sentiment.Flirty:
-                prompt.Append(" You are feeling flirty.");
-                break;
-
-            case Sentiment.Romantic:
-                prompt.Append(" You are feeling romantic.");
-                break;
-
-            case Sentiment.Arrogant:
-                prompt.Append(" You are arrogant.");
-                break;
-
-            case Sentiment.Calm:
-                prompt.Append(" You are calm.");
+            default:
+                prompt.Append($" You are {spirit.ToString()}.");
                 break;
         }
     }
@@ -221,8 +228,12 @@ internal sealed class AIPersona
             prompt.Append(" Keep your answers short.");
         }
 
-        AppendFeelingToPrompt(Feeling, prompt);
+        AppendSpiritToPrompt(Spirit, prompt);
         AppendInterestsToPrompt(Interests, prompt);
+        if (!string.IsNullOrEmpty(AdditionalDetails))
+        {
+            prompt.Append($" {AdditionalDetails}");
+        }
 
         return prompt.ToString();
     }
