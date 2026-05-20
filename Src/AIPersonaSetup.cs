@@ -77,8 +77,7 @@ internal static class AIPersonaSetup
         var detailsPrompt =
             new TextPrompt<string>(
                     "Any additional details? for example [DarkSeaGreen4 italic]You want some recommendations on books to read[/]. [Grey italic]Leave empty to ignore[/]: ")
-                .AllowEmpty()
-                .ClearOnFinish();
+                .AllowEmpty();
         var additionalDetails = await AnsiConsole.PromptAsync(detailsPrompt, cancellationToken);
 
         return new AIPersona(name, ollamaClient)
